@@ -52,6 +52,29 @@ describe('Utils tests', () => {
     expect(await utils.parseVersion('4.x')).toBe(undefined);
   });
 
+  it('checking resolveVersionInput', () => {
+    // composer.json
+    expect(utils.parsePhpVersionFile('{"require": {"php": "^8.1"}}')).toBe(
+      '8.1'
+    );
+    expect(utils.parsePhpVersionFile('{"require": {"php": "8.1.1"}}')).toBe(
+      '8.1'
+    );
+    expect(
+      utils.parsePhpVersionFile('{"config": {"platform": {"php": "8.1"}}}')
+    ).toBe('8.1');
+    expect(
+      utils.parsePhpVersionFile('{"config": {"platform": {"php": "8.1.1"}}}')
+    ).toBe('8.1');
+    expect(utils.parsePhpVersionFile('{"require": {"php": "^8.1|^8.0"}}')).toBe(
+      '8.1'
+    );
+    // asdf: .tool-versions
+    expect(utils.parsePhpVersionFile('php 8.1')).toBe('8.1');
+    // phpenv: .php-version
+    expect(utils.parsePhpVersionFile('8.1.1')).toBe('8.1');
+  });
+
   it('checking parseIniFile', async () => {
     expect(await utils.parseIniFile('production')).toBe('production');
     expect(await utils.parseIniFile('development')).toBe('development');
